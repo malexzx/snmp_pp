@@ -77,7 +77,8 @@ namespace Snmp_pp {
 //======================================================================
 // SMI value structure conforming with SMI RFC
 //
-typedef struct SmiVALUE
+/*typedef*/ 
+struct DLLOPT SmiVALUE
 {		/* smiVALUE portion of VarBind */
         SmiVALUE()
           : syntax(sNMP_SYNTAX_NULL)
@@ -103,7 +104,9 @@ typedef struct SmiVALUE
                                    SNMP_SYNTAX_NOSUCHINSTANCE
                                    SNMP_SYNTAX_ENDOFMIBVIEW */
 		  }   value;
-               } *SmiLPVALUE;
+}; 
+
+typedef SmiVALUE *SmiLPVALUE;
 //=================================================================
 
 //--------------------------------------------------------------------

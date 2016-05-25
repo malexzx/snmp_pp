@@ -1,0 +1,17 @@
+project {
+  exeout = .
+  after += snmppp
+  libs += snmppp
+  includes += include/  ../../include
+  libpaths += ../lib
+
+  specific(prop:microsoft) {
+    macros += WIN32 _LIB _CRT_SECURE_NO_WARNINGS SNMP_PP_DLL
+  }
+  
+  macros += HAVE_CONFIG_H
+  Header_Files {
+    include/*.h
+    include/snmp_pp/*.h
+  }
+}
