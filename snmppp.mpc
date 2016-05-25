@@ -1,0 +1,120 @@
+project (snmppp) {
+  staticname = 
+  sharedname = snmppp
+  libout = ../lib
+  includes += include/  ../../include
+  libpaths += ../../lib
+  
+  macros += HAVE_CONFIG_H
+  specific(prop:microsoft) {
+    macros += WIN32 _LIB _CRT_SECURE_NO_WARNINGS SNMP_PP_DLL SNMP_PP_EXPORTS _WINSOCK_DEPRECATED_NO_WARNINGS
+    lit_libs += ssleay32 libeay32 Ws2_32
+  }
+  Header_Files {
+    include/*.h
+    include/snmp_pp/*.h
+  }
+  Source_Files {
+    src/address.cpp
+    src/asn1.cpp
+    src/auth_priv.cpp
+    src/counter.cpp
+    src/ctr64.cpp
+    src/eventlist.cpp
+    src/eventlistholder.cpp
+    src/gauge.cpp
+    src/idea.cpp
+    src/integer.cpp
+    src/IPv6Utility.cpp
+    src/log.cpp
+    src/md5c.cpp
+    src/mp_v3.cpp
+    src/msec.cpp
+    src/msgqueue.cpp
+    src/notifyqueue.cpp
+    src/octet.cpp
+    src/oid.cpp
+    src/pdu.cpp
+    src/reentrant.cpp
+    src/sha.cpp
+    src/snmpmsg.cpp
+    src/target.cpp
+    src/timetick.cpp
+    src/usm_v3.cpp
+    src/uxsnmp.cpp
+    src/v3.cpp
+    src/vb.cpp
+  }
+}
+
+
+project(receive_trap) : snmpppexe {
+  Source_Files {
+    consoleExamples/receive_trap.cpp    
+  }  
+}
+project(snmpBulk) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpBulk.cpp    
+  }  
+}
+project(snmpDiscover) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpDiscover.cpp   
+  }  
+}
+project(snmpGet) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpGet.cpp    
+  }  
+}
+project(snmpInform) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpInform.cpp    
+  }  
+}
+project(snmpNext) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpNext.cpp    
+  }  
+}
+
+project(snmpNextAsync) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpNextAsync.cpp    
+  }  
+}
+
+project(snmpPasswd) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpPasswd.cpp    
+  }  
+}
+project(snmpSet) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpSet.cpp    
+  }  
+}
+project(snmpTraps) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpTraps.cpp    
+  }  
+}
+project(snmpWalk) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpWalk.cpp    
+  }  
+}
+
+
+//project(snmpWalkThreads) : snmpppexe {
+//  Source_Files {
+//    consoleExamples/snmpWalkThreads.cpp    
+//  }  
+//}
+
+project(test_app) : snmpppexe {
+  Source_Files {
+    consoleExamples/test_app.cpp    
+  }  
+}

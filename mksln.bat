@@ -1,0 +1,1 @@
+perl %ACE_ROOT%\bin\mwc.pl  -type vc14 -value_template platforms=x64 
