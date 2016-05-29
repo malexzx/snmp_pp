@@ -103,6 +103,11 @@ void LogEntry::init(void)
 #if defined (CPU) && CPU == PPC603
 	int pid = taskIdSelf();
 #else
+#ifdef __APPLE__
+        uint64_t pid;
+        pthread_threadid_np(NULL, &pid);
+	add_integer(static_cast<long>(pid));
+#else
 #ifdef POSIX_THREADS
         pthread_t pid = pthread_self();
 	if (sizeof(pthread_t) == sizeof(long))
@@ -123,6 +128,7 @@ void LogEntry::init(void)
         int pid = 0;
 #endif
 	add_integer(pid);
+#endif
 #endif
 #endif
 
@@ -399,6 +405,7 @@ LogEntry* AgentLogImpl::create_log_entry(const char * const name, unsigned char 
  */
 AgentLog& AgentLogImpl::operator+=(const LogEntry* log)
 {
+  SnmpSynchronize lm(mutex);
 	fprintf(logfile, "%s\n", log->get_value());
 
 	// check if critical error
