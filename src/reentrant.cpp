@@ -34,58 +34,6 @@ char reentrant_cpp_version[]="#(@) SNMP++ $Id: reentrant.cpp 2361 2013-05-09 22:
 namespace Snmp_pp {
 #endif
 
-SnmpSynchronized::SnmpSynchronized()
-{
-#ifdef _THREADS
-#ifdef WIN32
-	InitializeCriticalSection(&_mutex);
-#elif defined (CPU) && CPU == PPC603
-	_mutex = semMCreate(SEM_Q_PRIORITY | SEM_DELETE_SAFE | SEM_INVERSION_SAFE );
-#else
-	pthread_mutex_init(&_mutex, 0);
-#endif
-#endif
-}
-
-SnmpSynchronized::~SnmpSynchronized()
-{
-#ifdef _THREADS
-#ifdef WIN32
-	DeleteCriticalSection(&_mutex);
-#elif defined (CPU) && CPU == PPC603
-	semTake(_mutex, WAIT_FOREVER);
-	semDelete(_mutex);
-#else
-	pthread_mutex_destroy(&_mutex);
-#endif
-#endif
-}
-
-void SnmpSynchronized::lock()
-{
-#ifdef _THREADS
-#ifdef WIN32
-	EnterCriticalSection(&_mutex);
-#elif defined (CPU) && CPU == PPC603
-    semTake(_mutex, WAIT_FOREVER);
-#else
-	pthread_mutex_lock(&_mutex);
-#endif
-#endif
-}	
-
-void SnmpSynchronized::unlock()
-{
-#ifdef _THREADS
-#ifdef WIN32
-	LeaveCriticalSection(&_mutex);
-#elif defined (CPU) && CPU == PPC603
-    semGive(_mutex);
-#else
-	pthread_mutex_unlock(&_mutex);
-#endif
-#endif
-}	
 
 #ifdef SNMP_PP_NAMESPACE
 } // end of namespace Snmp_pp
