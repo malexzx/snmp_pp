@@ -33,48 +33,14 @@
 #include "snmp_pp/config_snmp_pp.h"
 #include "snmp_pp/smi.h"
 
-#ifdef _THREADS
-#ifdef WIN32
-#include <process.h>
-#elif defined (CPU) && CPU == PPC603
-#include <semLib.h> 
-#else
-#include <pthread.h>
-#endif
-#endif
+#include "cpp11om/lwlock.h"
 
 #ifdef SNMP_PP_NAMESPACE
 namespace Snmp_pp {
 #endif
 
-class DLLOPT SnmpSynchronized {
-
- public:
-  SnmpSynchronized();
-  virtual ~SnmpSynchronized();
-#ifdef _THREADS
-#ifdef WIN32
-  CRITICAL_SECTION      _mutex;
-#elif defined (CPU) && CPU == PPC603
-  SEM_ID            	_mutex;
-#else
-  pthread_mutex_t      	_mutex;
-#endif
-#endif
-  void lock();
-  void unlock();
-};
-
-class DLLOPT SnmpSynchronize {
-
- public:
-  SnmpSynchronize(SnmpSynchronized& sync) : s(sync) { s.lock(); };
-  ~SnmpSynchronize() { s.unlock(); }
-
- protected:
-  SnmpSynchronized& s;
-
-};
+typedef cpp11om::NonRecursiveLWLock SnmpSynchronized;
+typedef cpp11om::LockGuard<SnmpSynchronized> SnmpSynchronize;
 
 #define REENTRANT(x) { SnmpSynchronize _synchronize(*this); x }
 
