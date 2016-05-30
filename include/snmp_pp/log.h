@@ -28,6 +28,7 @@
 #ifndef _log_h_
 #define _log_h_
 
+#include <memory>
 #include <snmp_pp/config_snmp_pp.h>
 #include <snmp_pp/reentrant.h>
 
@@ -64,7 +65,7 @@ namespace Snmp_pp {
 #define LOG_UNUSED(x)
 
 #else
-
+#if 0
 #define LOG_BEGIN(name,level)					\
 {								\
 	if (DefaultLog::log()->log_needed(name,level))		\
@@ -81,6 +82,22 @@ namespace Snmp_pp {
 	}							\
 }								\
 (void)0
+#endif
+#define LOG_BEGIN(name,level)					\
+{								\
+  if (DefaultLog::log()->log_needed(name,level))		\
+  {							\
+    std::unique_ptr<LogEntry> entry(DefaultLog::log()->create_log_entry(name,level)); \
+    entry->init();
+
+#define LOG(item)	*entry += item
+
+#define LOG_END							\
+    *DefaultLog::log() += entry.get();	\
+  }							\
+}								\
+(void)0
+
 
 #define LOG_UNUSED(x) x
 
