@@ -516,8 +516,8 @@ public:
 	 *    an AgentLog instance to be used as default logger. A previously
 	 *    set logger will be deleted.
 	 */
-	static void init(AgentLog* logger) 
-	  { lock(); if (instance) delete instance; instance = logger; unlock(); }
+     /*static void init(AgentLog* logger)
+       { lock(); if (instance) delete instance; instance = logger; unlock(); }*/
 
 	/**
 	 * Initialize the default logger with the given logging implementation
@@ -562,14 +562,14 @@ public:
 	 * @param type
 	 *    the type of the log entry as bitwise or of log class and level. 
 	 */
-	static void create_log_entry(const char *name, unsigned char t)
-	{
-	    if (!entry)
-	    {
-		entry = log()->create_log_entry(name,t);
-		entry->init();
-	    }
-	}
+     /*static void create_log_entry(const char *name, unsigned char t)
+     {
+         if (!entry)
+         {
+         entry = log()->create_log_entry(name,t);
+         entry->init();
+         }
+     }*/
 
 	/**
 	 * Return the current log entry. If there is none, an ERROR_LOG entry
@@ -578,51 +578,41 @@ public:
 	 * @return
 	 *    a pointer to a LogEntry instance.
 	 */
-	static LogEntry* log_entry() 
+	/*static LogEntry* log_entry() 
 	{
 	    if (!entry) {
 		create_log_entry("main", ERROR_LOG | 1);
             }
 	    return entry;
-	} 
+	} */
 
 	/**
 	 * Delete current log entry.
 	 */
-	static void delete_log_entry() 
-	{
-	    if (entry)
-		delete entry;
-	    entry = 0;
-	}
-
+     /*static void delete_log_entry()
+     {
+         if (entry)
+         delete entry;
+         entry = 0;
+     }
+ */
 	/**
 	 * Lock the log singleton.
 	 */
-	static void lock()
-	{
-#ifdef _THREADS
-		mutex.lock();
-#endif
-	}
+	static void lock();
 
 	/**
 	 * Unlock the log singleton.
 	 */
-	static void unlock()
-	{
-#ifdef _THREADS
-		mutex.unlock();
-#endif
-	}
+	static void unlock();
 
 protected:
 
 	static AgentLog* instance;
-	static LogEntry* entry;
-#ifdef _THREADS
-	static SnmpSynchronized mutex;
-#endif
+	//static LogEntry* entry;
+//#ifdef _THREADS
+//	static SnmpSynchronized mutex;
+//#endif
 	static const char defaultName;
 };
 

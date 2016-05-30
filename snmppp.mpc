@@ -118,3 +118,8 @@ project(test_app) : snmpppexe {
     consoleExamples/test_app.cpp    
   }  
 }
+project(snmpInformAsync) : snmpppexe {
+  Source_Files {
+    consoleExamples/snmpInformAsync.cpp
+  }  
+}

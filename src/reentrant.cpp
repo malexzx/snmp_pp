@@ -29,11 +29,36 @@ char reentrant_cpp_version[]="#(@) SNMP++ $Id: reentrant.cpp 2361 2013-05-09 22:
 #include <libsnmp.h>
 
 #include "snmp_pp/reentrant.h"
+#include "cpp11om/lwlock.h"
 
 #ifdef SNMP_PP_NAMESPACE
 namespace Snmp_pp {
 #endif
 
+SnmpSynchronized::SnmpSynchronized()
+#ifdef _THREADS
+  : _mutex(new cpp11om::NonRecursiveLWLock)
+#endif
+{
+}
+
+SnmpSynchronized::~SnmpSynchronized()
+{
+}
+
+void SnmpSynchronized::lock()
+{
+#ifdef _THREADS
+  _mutex->lock();
+#endif
+}	
+
+void SnmpSynchronized::unlock()
+{
+#ifdef _THREADS
+  _mutex->unlock();
+#endif
+}	
 
 #ifdef SNMP_PP_NAMESPACE
 } // end of namespace Snmp_pp

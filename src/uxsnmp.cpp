@@ -264,7 +264,7 @@ DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
     agent_addr.sin6_family = AF_INET6;
     agent_addr.sin6_port = htons(((UdpAddress &)address).get_port());
     agent_addr.sin6_scope_id = scope;
-    send_result = sendto( sock, (char*) send_buf, send_len, 0,
+    send_result = sendto( sock, (char*) send_buf, SAFE_INT_CAST(send_len), 0,
                           (struct sockaddr*) &agent_addr, sizeof(agent_addr));
 #else
     debugprintf(0, "User error: Enable IPv6 and recompile snmp++.");

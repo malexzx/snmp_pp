@@ -608,7 +608,7 @@ int IpAddress::parse_coloned_ipstring(const char *inaddr)
 
   {
       int scope_pos;
-      for (int i=strlen(temp)-1; i >=0 ; i--)
+      for (int i=(int)strlen(temp)-1; i >=0 ; i--)
       {
           if (temp[i] == '%')
           {
