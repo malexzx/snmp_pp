@@ -61,6 +61,10 @@ static int default_logfilter[] = LOG_DEFAULT_ORIGINAL;
 
 #undef   LOG_INDENT
 
+#ifdef _THREADS
+SnmpSynchronized mutex;
+#endif
+
 /*---------------------------- log profiles ---------------------------*/
 
 #if defined(WITH_LOG_PROFILES)
@@ -424,10 +428,10 @@ AgentLog& AgentLogImpl::operator+=(const LogEntry* log)
 // define the default logs
 
 AgentLog* DefaultLog::instance = 0;
-LogEntry* DefaultLog::entry = 0;
-#ifdef _THREADS
-SnmpSynchronized DefaultLog::mutex;
-#endif
+//LogEntry* DefaultLog::entry = 0;
+//#ifdef _THREADS
+//SnmpSynchronized DefaultLog::mutex;
+//#endif
 
 void DefaultLog::cleanup()
 {
@@ -435,6 +439,21 @@ void DefaultLog::cleanup()
   if (instance) delete instance;
   instance = 0;
   unlock();
+}
+
+
+void DefaultLog::unlock()
+{
+#ifdef _THREADS
+  mutex.unlock();
+#endif
+}
+
+void DefaultLog::lock()
+{
+#ifdef _THREADS
+  mutex.lock();
+#endif
 }
 
 AgentLog* DefaultLog::init_ts(AgentLog* logger)

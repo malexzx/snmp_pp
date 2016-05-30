@@ -30,17 +30,48 @@
 #define _SNMP_REENTRANT_H_
 
 #include <libsnmp.h>
+#include <memory>
+
 #include "snmp_pp/config_snmp_pp.h"
 #include "snmp_pp/smi.h"
 
-#include "cpp11om/lwlock.h"
+namespace cpp11om {
+  class NonRecursiveLWLock;
+}
 
 #ifdef SNMP_PP_NAMESPACE
 namespace Snmp_pp {
 #endif
 
-typedef cpp11om::NonRecursiveLWLock SnmpSynchronized;
-typedef cpp11om::LockGuard<SnmpSynchronized> SnmpSynchronize;
+class DLLOPT SnmpSynchronized {
+#ifdef _THREADS
+#ifdef _MSC_VER
+#  pragma warning( push )
+#  pragma warning( disable: 4251 )
+#endif
+  std::unique_ptr<cpp11om::NonRecursiveLWLock> _mutex;
+#ifdef _MSC_VER
+#  pragma warning( pop )
+#endif
+#endif
+
+ public:
+  SnmpSynchronized();
+  virtual ~SnmpSynchronized();
+  void lock();
+  void unlock();
+};
+
+class DLLOPT SnmpSynchronize {
+
+ public:
+  SnmpSynchronize(SnmpSynchronized& sync) : s(sync) { s.lock(); };
+  ~SnmpSynchronize() { s.unlock(); }
+
+ protected:
+  SnmpSynchronized& s;
+
+};
 
 #define REENTRANT(x) { SnmpSynchronize _synchronize(*this); x }
 

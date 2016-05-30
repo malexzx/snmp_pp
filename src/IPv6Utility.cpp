@@ -63,6 +63,9 @@
 #define NS_INT16SZ      2
 #define NS_INADDRSZ     4
 #define NS_IN6ADDRSZ    16
+#ifdef EAFNOSUPPORT
+#undef EAFNOSUPPORT
+#endif
 #define EAFNOSUPPORT    WSAEAFNOSUPPORT
 #define ENOSPC          28
 
@@ -307,7 +310,7 @@ inet_pton4(const char *src, unsigned char *dst)
 		const char *pch;
 
 		if ((pch = strchr(digits, ch)) != NULL) {
-			unsigned int newstr = *tp * 10 + (pch - digits);
+			unsigned int newstr = static_cast<unsigned int>(*tp * 10 + (pch - digits));
 
 			if (newstr > 255)
 				return (0);
@@ -413,7 +416,7 @@ inet_pton6(const char *src, unsigned char *dst)
 		 * Since some memmove()'s erroneously fail to handle
 		 * overlapping regions, we'll do the shift by hand.
 		 */
-		const int n = tp - colonp;
+		const int n = static_cast<int>(tp - colonp);
 		int i;
 
 		for (i = 1; i <= n; i++) {
