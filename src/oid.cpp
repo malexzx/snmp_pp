@@ -99,7 +99,7 @@ Oid::Oid(const char *oid_string, const bool is_dotted_oid_string)
   if (is_dotted_oid_string)
     StrToOid(oid_string, &smival.value.oid);
   else
-    set_data(oid_string, oid_string ? strlen(oid_string) : 0);
+    set_data(oid_string, static_cast<unsigned long>(oid_string ? strlen(oid_string) : 0));
 }
 
 #if 0

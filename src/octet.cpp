@@ -209,7 +209,7 @@ void OctetStr::set_data(const unsigned char *str, unsigned long len)
 //=============[ assignment to a string operator overloaded ]=========
 OctetStr& OctetStr::operator=(const char *str)
 {
-  set_data((const unsigned char*)str, (str ? strlen(str) : 0));
+  set_data((const unsigned char*)str, static_cast<unsigned long>(str ? strlen(str) : 0));
   return *this;	     // return self reference
 }
 
