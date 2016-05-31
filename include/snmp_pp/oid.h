@@ -168,6 +168,38 @@ class DLLOPT Oid : public SnmpSyntax
   }
 
   /**
+  * Constructor from T (template version).
+  *
+  * @param tag - uniqueness signature 
+  * @param  - length of array
+  */
+  template<class T>
+  Oid(bool junk, const T &oid)
+    : iv_str(0)
+    , iv_part_str(0)
+    , m_changed(true)
+  {
+    smival.syntax = sNMP_SYNTAX_OID;
+    smival.value.oid.len = 0;
+    smival.value.oid.ptr = 0;
+    size_t oid_len = oid.size();
+    if (oid_len > 0)
+    {
+      smival.value.oid.ptr = (SmiLPUINT32) new unsigned long[oid_len];
+      if (smival.value.oid.ptr)
+      {
+        smival.value.oid.len = oid_len;
+        int j = 0;
+        for (auto &i : oid) {
+          smival.value.oid.ptr[j] = (unsigned long)oid.at(j);
+          j++;
+        }
+      }
+    }
+  }
+
+
+  /**
    * Destructor.
    */
   virtual ~Oid()
