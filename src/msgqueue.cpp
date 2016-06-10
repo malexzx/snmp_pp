@@ -227,7 +227,7 @@ int CSNMPMessage::ResendMessage()
 
     return SNMP_CLASS_TIMEOUT;
   }
-
+  m_all_retry_cnt++;
   m_target->set_retry(m_target->get_retry() - 1);
   SetSendTime();
   int status = send_snmp_request(m_socket, m_rawPdu, m_rawPduLen, *m_address);
@@ -250,6 +250,17 @@ int CSNMPMessage::Callback(const int reason)
   }
   return 1;
 }
+
+
+size_t Snmp_pp::CSNMPMessage::GetAllRetryCnt()
+{
+  size_t ret = 0;
+  std::swap(m_all_retry_cnt, ret);
+
+  return ret;
+}
+
+size_t CSNMPMessage::m_all_retry_cnt = 0;
 
 //----[ CSNMPMessageQueueElt class ]--------------------------------------
 

@@ -227,6 +227,8 @@ DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
 
     send_result = sendto(sock, (char*) send_buf, SAFE_INT_CAST(send_len), 0,
                          (struct sockaddr*) &agent_addr, sizeof(agent_addr));
+    if (send_result > 0)
+      Snmp::bytes_out += send_result;
   }
   else
   {
@@ -266,6 +268,8 @@ DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
     agent_addr.sin6_scope_id = scope;
     send_result = sendto( sock, (char*) send_buf, SAFE_INT_CAST(send_len), 0,
                           (struct sockaddr*) &agent_addr, sizeof(agent_addr));
+    if(send_result>0)
+      Snmp::bytes_out += send_result;
 #else
     debugprintf(0, "User error: Enable IPv6 and recompile snmp++.");
     return -1;
@@ -307,8 +311,12 @@ int receive_snmp_response(SnmpSocket sock, Snmp &snmp_session,
                                          MAX_SNMP_PACKET + 1, 0,
                                          (struct sockaddr*)&from_addr,
                                          &fromlen);
+
     debugprintf(2, "++ SNMP++: something received...");
   } while ((receive_buffer_len < 0) && (EINTR == errno));
+
+  if (receive_buffer_len > 0)
+    Snmp::bytes_in += receive_buffer_len;
 
   if (receive_buffer_len < 0 )                // error or no data pending
     return SNMP_CLASS_TL_FAILED;
@@ -428,6 +436,9 @@ int receive_snmp_notification(SnmpSocket sock, Snmp &snmp_session,
                                          (struct sockaddr*)&from_addr,
                                          &fromlen);
   } while (receive_buffer_len < 0 && EINTR == errno);
+
+  if (receive_buffer_len > 0)
+    Snmp::bytes_in += receive_buffer_len;
 
   if (receive_buffer_len < 0 )                // error or no data pending
     return SNMP_CLASS_TL_FAILED;
@@ -2295,6 +2306,21 @@ void Snmp::stop_poll_thread()
 #endif
 }
 
+
+size_t Snmp_pp::Snmp::get_bytes_in()
+{
+  size_t ret = 0;
+  std::swap(bytes_in, ret);
+  return ret;
+}
+
+size_t Snmp_pp::Snmp::get_bytes_out()
+{
+  size_t ret = 0;
+  std::swap(bytes_out, ret);
+  return ret;
+}
+
 #ifdef WIN32
 int Snmp::process_thread(Snmp *pSnmp)
 {
@@ -2323,6 +2349,9 @@ void* Snmp::process_thread(void *arg)
 #endif
     return 0;
 }
+
+size_t Snmp::bytes_in = 0; 
+size_t Snmp::bytes_out = 0;
 
 #ifdef SNMP_PP_NAMESPACE
 } // end of namespace Snmp_pp
