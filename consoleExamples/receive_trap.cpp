@@ -63,7 +63,7 @@ void callback( int reason, Snmp *snmp, Pdu &pdu, SnmpTarget &target, void *cd)
   {
     pdu.get_vb(nextVb, i);
 
-    cout << "Oid: " << nextVb.get_printable_oid() << endl
+    cout << "Oid: " << nextVb.get_printable_oid() << ": "
 	 << "Val: " <<  nextVb.get_printable_value() << endl;
   }
   if (pdu.get_type() == sNMP_PDU_INFORM) {
@@ -83,6 +83,16 @@ int main(int argc, char **argv)
     trap_port = 10162; // no need to be root
   else
     trap_port = atoi(argv[1]);
+
+#if !defined(_NO_LOGGING) && !defined(WITH_LOG_PROFILES)
+  // Set filter for logging
+  DefaultLog::log()->set_filter(ERROR_LOG, 7);
+  DefaultLog::log()->set_filter(WARNING_LOG, 7);
+  DefaultLog::log()->set_filter(EVENT_LOG, 0);
+  DefaultLog::log()->set_filter(INFO_LOG, 0);
+  DefaultLog::log()->set_filter(DEBUG_LOG, 0);
+#endif
+
 
   //----------[ create a SNMP++ session ]-----------------------------------
   int status; 
