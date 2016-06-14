@@ -201,9 +201,16 @@ long Snmp::MyMakeReqId()
 }
 
 //---------[ Send SNMP Request ]---------------------------------------
+void add_bytes_out(bool retry, size_t bytes_out)
+{
+    if (retry)
+      Snmp::retry_bytes_out += bytes_out;
+    else
+      Snmp::bytes_out += bytes_out;
+}
 // Send out a snmp request
 DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
-                             size_t send_len, const Address & address)
+                             size_t send_len, const Address & address, bool retry)
 {
   // UX only supports UDP type addresses (addr and port) right now
   if (address.get_type() != Address::type_udp)
@@ -228,7 +235,7 @@ DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
     send_result = sendto(sock, (char*) send_buf, SAFE_INT_CAST(send_len), 0,
                          (struct sockaddr*) &agent_addr, sizeof(agent_addr));
     if (send_result > 0)
-      Snmp::bytes_out += send_result;
+      add_bytes_out(retry, send_result);
   }
   else
   {
@@ -268,8 +275,8 @@ DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
     agent_addr.sin6_scope_id = scope;
     send_result = sendto( sock, (char*) send_buf, SAFE_INT_CAST(send_len), 0,
                           (struct sockaddr*) &agent_addr, sizeof(agent_addr));
-    if(send_result>0)
-      Snmp::bytes_out += send_result;
+    if (send_result > 0)
+      add_bytes_out(retry, send_result);
 #else
     debugprintf(0, "User error: Enable IPv6 and recompile snmp++.");
     return -1;
@@ -2309,6 +2316,7 @@ void Snmp::stop_poll_thread()
 }
 
 
+
 size_t Snmp_pp::Snmp::get_bytes_in()
 {
   size_t ret = 0;
@@ -2320,6 +2328,13 @@ size_t Snmp_pp::Snmp::get_bytes_out()
 {
   size_t ret = 0;
   std::swap(bytes_out, ret);
+  return ret;
+}
+
+size_t Snmp_pp::Snmp::get_retry_bytes_out()
+{
+  size_t ret = 0;
+  std::swap(retry_bytes_out, ret);
   return ret;
 }
 
@@ -2354,6 +2369,7 @@ void* Snmp::process_thread(void *arg)
 
 size_t Snmp::bytes_in = 0; 
 size_t Snmp::bytes_out = 0;
+size_t Snmp::retry_bytes_out = 0;
 
 #ifdef SNMP_PP_NAMESPACE
 } // end of namespace Snmp_pp

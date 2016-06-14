@@ -549,6 +549,7 @@ class DLLOPT Snmp: public SnmpSynchronized
   *
   */
   static size_t get_bytes_out();
+  static size_t get_retry_bytes_out();
   static size_t get_bytes_in();
 
 protected:
@@ -674,10 +675,12 @@ private:
     Pdu &pdu, UdpAddress &fromaddress,
     OctetStr &engine_id, bool process_msg);
   friend DLLOPT int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
-    size_t send_len, const Address & address);
+    size_t send_len, const Address & address, bool retry = false);
+  friend void add_bytes_out(bool retry, size_t bytes_out);
 
   static size_t bytes_in;
   static size_t bytes_out;
+  static size_t retry_bytes_out;
 };
 
 #ifdef SNMP_PP_NAMESPACE
