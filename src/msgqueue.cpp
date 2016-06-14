@@ -70,7 +70,7 @@ static const char *loggerModuleName = "snmp++.msgqueue";
 
 //--------[ externs ]---------------------------------------------------
 extern int send_snmp_request(SnmpSocket sock, unsigned char *send_buf,
-                             size_t send_len, const Address &address);
+                             size_t send_len, const Address &address,bool);
 extern int receive_snmp_response(SnmpSocket sock, Snmp &snmp_session,
                                  Pdu &pdu, UdpAddress &fromaddress,
                                  OctetStr &engine_id, bool process_msg = true);
