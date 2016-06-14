@@ -125,7 +125,7 @@ class DLLOPT CSNMPMessage
   SnmpTarget *GetTarget() { return m_target; };
   bool IsLocked() const { return m_locked; };
   void SetLocked(const bool l) { m_locked = l; };
-  static size_t GetAllRetryCnt();
+  static size_t get_retry_cnt();
  protected:
 
   unsigned long	  m_uniqueId;

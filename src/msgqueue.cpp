@@ -252,7 +252,7 @@ int CSNMPMessage::Callback(const int reason)
 }
 
 
-size_t Snmp_pp::CSNMPMessage::GetAllRetryCnt()
+size_t Snmp_pp::CSNMPMessage::get_retry_cnt()
 {
   size_t ret = 0;
   std::swap(m_all_retry_cnt, ret);
