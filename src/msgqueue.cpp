@@ -230,7 +230,7 @@ int CSNMPMessage::ResendMessage()
   m_all_retry_cnt++;
   m_target->set_retry(m_target->get_retry() - 1);
   SetSendTime();
-  int status = send_snmp_request(m_socket, m_rawPdu, m_rawPduLen, *m_address);
+  int status = send_snmp_request(m_socket, m_rawPdu, m_rawPduLen, *m_address, true);
   if (status != 0)
     return SNMP_CLASS_TL_FAILED;
 
