@@ -34,29 +34,34 @@
 #include "snmp_pp/config_snmp_pp.h"
 #include "snmp_pp/smi.h"
 
-namespace cpp11om {
-  class NonRecursiveLWLock;
-}
+#ifdef _THREADS
+#ifdef WIN32
+#include <process.h>
+#elif defined (CPU) && CPU == PPC603
+#include <semLib.h> 
+#else
+#include <pthread.h>
+#endif
+#endif
 
 #ifdef SNMP_PP_NAMESPACE
 namespace Snmp_pp {
 #endif
 
 class DLLOPT SnmpSynchronized {
-#ifdef _THREADS
-#ifdef _MSC_VER
-#  pragma warning( push )
-#  pragma warning( disable: 4251 )
-#endif
-  std::unique_ptr<cpp11om::NonRecursiveLWLock> _mutex;
-#ifdef _MSC_VER
-#  pragma warning( pop )
-#endif
-#endif
 
  public:
   SnmpSynchronized();
   virtual ~SnmpSynchronized();
+#ifdef _THREADS
+#ifdef WIN32
+  CRITICAL_SECTION      _mutex;
+#elif defined (CPU) && CPU == PPC603
+  SEM_ID            	_mutex;
+#else
+  pthread_mutex_t      	_mutex;
+#endif
+#endif
   void lock();
   void unlock();
 };
@@ -71,6 +76,7 @@ class DLLOPT SnmpSynchronize {
   SnmpSynchronized& s;
 
 };
+
 
 #define REENTRANT(x) { SnmpSynchronize _synchronize(*this); x }
 
