@@ -45,9 +45,13 @@ void callback( int reason, Snmp *snmp, Pdu &pdu, SnmpTarget &target, void *cd)
   target.get_address(addr);
   UdpAddress from(addr);
 
-  cout << "reason: " << reason << endl
-       << "msg: " << snmp->error_msg(reason) << endl
-       << "from: " << from.get_printable() << endl;
+  if(reason != -7)
+    cout << "reason: " << reason << " "
+       << "msg: " << snmp->error_msg(reason) << " "
+       << "from: " << from.get_printable() << " ";
+  else
+    cout << "from: " << from.get_printable() << " ";
+
 
   pdu_error = pdu.get_error_status();
   if (pdu_error){
@@ -56,19 +60,19 @@ void callback( int reason, Snmp *snmp, Pdu &pdu, SnmpTarget &target, void *cd)
   }
   Oid id;
   pdu.get_notify_id(id);
-  cout << "ID:  " << id.get_printable() << endl;
-  cout << "Type:" << pdu.get_type() << endl;
+  cout << "ID:  " << id.get_printable() << " ";
+  //cout << "Type:" << pdu.get_type() << endl;
 
   for (int i=0; i<pdu.get_vb_count(); i++)
   {
     pdu.get_vb(nextVb, i);
 
-    cout << "Oid: " << nextVb.get_printable_oid() << ": "
-	 << "Val: " <<  nextVb.get_printable_value() << endl;
+    if(i==6 || i==7 || i==9||i==12)cout << /*"Oid: " << nextVb.get_printable_oid() << ": "
+	 << "Val: " <<*/  nextVb.get_printable_value() << " ";
   }
   if (pdu.get_type() == sNMP_PDU_INFORM) {
-      cout << "pdu type: " << pdu.get_type() << endl;
-      cout << "sending response to inform: " << endl;
+      //cout << "pdu type: " << pdu.get_type() << endl;
+      //cout << "sending response to inform: " << endl;
       nextVb.set_value("This is the response.");
       pdu.set_vb(nextVb, 0);
       snmp->response(pdu, target);
