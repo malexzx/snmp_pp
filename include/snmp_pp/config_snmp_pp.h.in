@@ -143,7 +143,7 @@
 #define SNMP_BROADCAST
 
 // Some socket types
-#if !(defined (CPU) && CPU == PPC603) && (defined __GNUC__ || defined __FreeBSD__ || defined _AIX) && ! defined __MINGW32__
+#if !(defined __hpux) && !(defined (CPU) && CPU == PPC603) && (defined __GNUC__ || defined __FreeBSD__ || defined _AIX) && ! defined __MINGW32__
   typedef socklen_t SocketLengthType;
 #else
   typedef int SocketLengthType;
