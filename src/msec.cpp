@@ -212,7 +212,7 @@ void msec::refresh()
   m_time.tv_usec = theTime.NumMS % 1000;
 
 #else
-#ifdef HAVE_CLOCK_GETTIME
+#if defined(HAVE_CLOCK_GETTIME) && !defined(__hpux)
   struct timespec tsp;
   clock_gettime(CLOCK_MONOTONIC, &tsp);
   m_time.tv_sec = tsp.tv_sec;
