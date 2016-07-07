@@ -2,8 +2,8 @@ project {
   exeout = .
   after += snmppp
   libs += snmppp
-  includes += include/  ../../include
-  libpaths += ../lib
+  includes += include/  $(LIB_C_ROOT)/include
+  libpaths += $(LIB_C_ROOT)/lib $(LIB_C_ROOT)/contrib/lib
 
   specific(prop:microsoft) {
     macros += WIN32 _LIB _CRT_SECURE_NO_WARNINGS SNMP_PP_DLL
