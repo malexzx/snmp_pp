@@ -1,9 +1,9 @@
 project (snmppp) {
   staticname = 
   sharedname = snmppp
-  libout = ../lib
-  includes += include/  ../../include
-  libpaths += ../../lib
+  libout = $(LIB_C_ROOT)/lib
+  includes += include/  $(LIB_C_ROOT)/include
+  libpaths += $(LIB_C_ROOT)/lib
   
   macros += HAVE_CONFIG_H
   specific(prop:microsoft) {
