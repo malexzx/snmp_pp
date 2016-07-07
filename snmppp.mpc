@@ -1,7 +1,7 @@
 project (snmppp) {
   staticname = 
   sharedname = snmppp
-  libout = $(LIB_C_ROOT)/lib
+  libout = $(LIB_C_ROOT)/contrib/lib
   includes += include/  $(LIB_C_ROOT)/include
   libpaths += $(LIB_C_ROOT)/lib
   
