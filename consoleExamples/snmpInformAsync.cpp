@@ -34,7 +34,7 @@ struct trap_sender_impl {
 
   trap_sender_impl() :
     version(Snmp_pp::version2c),
-    address("127.0.0.1:162"),
+    address("172.20.147.97:1620"),
     ctarget(address),
     utarget(address),
     community("public"),
@@ -47,8 +47,8 @@ struct trap_sender_impl {
     contextEngineID(""),
     authProtocol(SNMP_AUTHPROTOCOL_NONE),
     privProtocol(SNMP_PRIVPROTOCOL_NONE),
-    retries(1),
-    timeout(100)  {
+    retries(3),
+    timeout(1000)  {
   }
 
   const Snmp_pp::SnmpTarget &get_target() const {
@@ -66,6 +66,29 @@ struct trap_sender_impl {
   }
 };
 
+static void callback(int reason, Snmp_pp::Snmp* snmp, Snmp_pp::Pdu& pdu, Snmp_pp::SnmpTarget& target, void* cd) {
+  Vb nextVb;
+  int pdu_error;
+
+  cout << "XXX reason: " << reason << endl
+       << "msg: " << snmp->error_msg(reason) << endl;
+
+  pdu_error = pdu.get_error_status();
+  if (pdu_error){
+    cout << "Response contains error: "
+         << snmp->error_msg(pdu_error)<< endl;
+  }
+  for (int i=0; i<pdu.get_vb_count(); i++)
+  {
+    pdu.get_vb(nextVb, i);
+
+    cout << "Oid: " << nextVb.get_printable_oid() << endl
+         << "Val: " <<  nextVb.get_printable_value() << endl;
+  }
+
+  cout << endl;
+
+}
 
 int main(int argc, char **argv)
 {
@@ -109,7 +132,7 @@ int main(int argc, char **argv)
    long privProtocol = SNMP_PRIVPROTOCOL_NONE;
    v3MP *v3_MP;
 
-   Snmp_pp::snmp_version version = version3;
+   Snmp_pp::snmp_version version = version2c;
     authProtocol = SNMP_AUTHPROTOCOL_HMACSHA;
     privProtocol = SNMP_PRIVPROTOCOL_AES128;
     securityName = "informtest";
@@ -191,10 +214,12 @@ int main(int argc, char **argv)
      v3_MP = new v3MP("dummy", 0, construct_status);
    }
 
+   // Start thread that triggers processing of async responses
+   snmp->start_poll_thread(10);
 
 
-
-for(int zz=0;zz<1000;zz++){
+for(int k=0;k<10000;k++){
+for(int zz=0;zz<100;zz++){
   //--------[ build up SNMP++ object needed ]-------------------------------
   Pdu pdu;                               // construct a Pdu object
   Vb vb;                                 // variable binding object to use
@@ -229,8 +254,16 @@ for(int zz=0;zz<1000;zz++){
    else
      target = &ctx.ctarget;
 
-   status = snmp->inform( pdu,*target);
+   status = snmp->inform( pdu, *target, callback, 0);
+   if (status == SNMP_CLASS_SUCCESS)
+   {
+     cout << "Async GetNext Request sent." << endl;
+   }
+   else
+     cout << "SNMP++ GetNext Error, " << snmp->error_msg( status)
+	  << " (" << status <<")" << endl ;
 
+/*
    if (status == SNMP_CLASS_SUCCESS)
    {
      pdu.get_vb( vb,0);
@@ -248,6 +281,19 @@ for(int zz=0;zz<1000;zz++){
 	  << " (" << status <<")" << endl ;
    }
    std::cout << "================================================================" << std::endl;
+*/
+   //usleep(100);
+
 }
+ usleep(0);
+}
+   for(int i=0;i<10;i++)
+           usleep(100000);
+
+   snmp->stop_poll_thread(); // stop poll thread
+
    Snmp::socket_cleanup();  // Shut down socket subsystem
 }
+
+
+
