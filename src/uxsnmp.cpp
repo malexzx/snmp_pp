@@ -192,6 +192,9 @@ long Snmp::MyMakeReqId()
       tv.tv_sec = 0;
       tv.tv_usec = 100;
       select(0, 0, 0, 0, &tv);
+#ifndef WIN32
+      usleep(0);
+#endif
       eventListHolder->snmpEventList()->lock();
     }
   } while (eventListHolder->snmpEventList()->GetEntry(rid));
